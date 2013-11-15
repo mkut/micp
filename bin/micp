@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+$:.unshift File.dirname(__FILE__) + "/../lib"
+
+require 'rubygems'
+require 'micp'
+
+def usage(why = nil)
+	puts "failed for reason: #{why}" if why
+	puts "usage: submit"
+	exit(1)
+end
+
+POSSIBLE_COMMANDS = {
+	'submit' => :submit
+}
+
+if POSSIBLE_COMMANDS.has_key? ARGV.first
+	cmd = POSSIBLE_COMMANDS[ARGV.shift]
+else
+	cmd = nil
+end
+
+config = MICP::Config.new(ARGV)
+micp = MICP::Core.new(config)
+micp.exec(cmd) if cmd
