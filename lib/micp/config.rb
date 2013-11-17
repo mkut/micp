@@ -1,5 +1,6 @@
 require 'yaml'
 require 'active_support/all'
+require 'pathname'
 
 module MICP
 	class Config
@@ -11,16 +12,37 @@ module MICP
 		def [](key)
 			@configs
 				.find { |c| !c.attr(service, key).nil? }
-				.try(:attr, service, key)
+				.try(:attr, service, key) if service
+		end
+		def keys
+			@configs
+				.map { |c| c.keys(service) }
+				.flatten
+				.uniq if service
 		end
 
 		def initialize(args)
 			@configs = []
-			@configs.unshift FileConfig.new(ENV['HOME'] + '/.micp')
-			@configs.unshift FileConfig.new('.micp')
+			path = Pathname.new(".").expand_path()
+			while true
+				@configs.push FileConfig.new(path + ".micp")
+				break if path.root?
+				path = path.parent
+			end
 			args.each { |argv|
 				@configs.unshift StringConfig.new(argv)
 			}
+		end
+
+		def to_s
+			if service
+				inner = keys
+					.map { |key| "#{key}: #{self[key]}"}
+					.join(", ")
+				"#{service}/{#{inner}}"
+			else
+				"/{}"
+			end
 		end
 
 	end
@@ -52,11 +74,17 @@ module MICP
 
 		attr_reader :service
 		def attr(service, key)
-			# p [service, key, _attr(service, key)]
 			_attr(service, key) || _attr(:any, key)
 		end
 		def _attr(service, key)
 			@attr[service] && @attr[service][key]
+		end
+		def keys(service = nil)
+			if @attr.has_key? service
+				@attr[service].keys
+			else
+				[]
+			end
 		end
 
 		def initialize
