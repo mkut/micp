@@ -20,6 +20,12 @@ module MICP
 				.flatten
 				.uniq if service
 		end
+		def require(*x)
+			if x.any? { |key| self[key].nil? }
+				puts "something key isn't found!"
+				exit(1)
+			end
+		end
 
 		def initialize(args)
 			@configs = []

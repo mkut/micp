@@ -2,37 +2,28 @@ require 'rest_client'
 
 module MICP
 	class Codeforces
-		def initialize(config)
-			@csrf_token = config[:token]
-			@problem = config[:problem]
-			@lang_code = lang_code(config[:language])
-			@source = config[:source]
-			@xuserid = config[:userid]
-			if !(@csrf_token && @problem && @lang_code && @source)
-				puts "something wrong! [TODO]"
-				exit(1)
-			end
+		def initialize(config, cmd)
+			config.require(*REQUIREMENTS[cmd])
+			@cmd = cmd
+			@config = config
 		end
 
-		def exec(cmd)
-			case cmd
-			when :submit
-				submit()
-			end
+		def exec()
+			self.send(@cmd)
 		end
 
 		def submit()
 			response = RestClient.post("http://codeforces.com/problemset/submit?csrf_token=",
 				{
-					:csrf_token => @csrf_token,
+					:csrf_token => @config[:token],
 					:action => 'submitSolutionFormSubmitted',
-					:submittedProblemCode => @problem,
-					:programTypeId => @lang_code,
+					:submittedProblemCode => @config[:problem],
+					:programTypeId => lang_code(@config[:language]),
 					:source => '',
 					:_tta => '247',
-					:sourceFile => File.new(@source)
+					:sourceFile => File.new(@config[:source])
 				},
-				{:cookies => { 'X-User' => "#{@xuserid};" }}
+				{:cookies => { 'X-User' => "#{@config[:userid]};" }}
 			) { |response, request, result, &block|
 				case response.code
 				when 302
@@ -48,6 +39,13 @@ module MICP
 			}
 		end
 
+		def new()
+			Dir.mkdir(@config[:problem])
+			dot_micp = File.new(File.join(@config[:problem], ".micp"), "w")
+			dot_micp.puts "language: #{@config[:language]}"
+			dot_micp.puts "problem: #{@config[:problem]}"
+		end
+
 		def lang_code(lang)
 			if LANG_CODE.has_key? lang
 				LANG_CODE[lang]
@@ -59,6 +57,10 @@ module MICP
 
 		LANG_CODE = {
 			"haskell" => 12
+		}
+		REQUIREMENTS = {
+			:submit => [:token, :problem, :language, :source, :userid],
+			:new    => [:problem, :language],
 		}
 	end
 end
