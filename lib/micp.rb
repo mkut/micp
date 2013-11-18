@@ -1,3 +1,5 @@
 require File.dirname(__FILE__) + '/micp/core'
 require File.dirname(__FILE__) + '/micp/config'
+require File.dirname(__FILE__) + '/micp/service'
 require File.dirname(__FILE__) + '/micp/codeforces'
+require File.dirname(__FILE__) + '/micp/aizu_online_judge'

@@ -15,6 +15,7 @@ end
 POSSIBLE_COMMANDS = {
 	'submit' => :submit,
 	'new'    => :new,
+	'test'   => :test,
 }
 
 if POSSIBLE_COMMANDS.has_key? ARGV.first
@@ -30,6 +31,5 @@ config = MICP::Config.new(ARGV)
 
 usage("no service") if config.service.nil?
 
-puts "service: #{config.service}"
 micp = MICP::Core.new(config, cmd)
 micp.exec()
