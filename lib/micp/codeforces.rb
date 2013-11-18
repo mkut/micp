@@ -2,18 +2,17 @@ require 'rest_client'
 
 module MICP
 	class Codeforces
-		def initialize(config, cmd)
-			config.require(*REQUIREMENTS[cmd])
-			@cmd = cmd
-			@config = config
-		end
+		include Service
 
-		def exec()
-			self.send(@cmd)
+		def requirements
+			REQUIREMENTS
+		end
+		def service_name
+			"Codeforces"
 		end
 
 		def submit()
-			response = RestClient.post("http://codeforces.com/problemset/submit?csrf_token=",
+			RestClient.post("http://codeforces.com/problemset/submit?csrf_token=",
 				{
 					:csrf_token => @config[:token],
 					:action => 'submitSolutionFormSubmitted',
@@ -50,13 +49,32 @@ module MICP
 			if LANG_CODE.has_key? lang
 				LANG_CODE[lang]
 			else
-				puts "error: no such language"
-				exit(1)
+				abort("[ABORT]#{service_name} doesn't support language: `#{lang}'")
 			end
 		end
 
 		LANG_CODE = {
-			"haskell" => 12
+			"c"         => 10,
+			"c++"       => 1,
+			"c++0x"     => 16,
+			"c++11"     => 16,
+			"c#"        => 9,
+			"d"         => 28,
+			"delphi"    => 3,
+			"go"        => 32,
+			"haskell"   => 12,
+			"java"      => 5,
+			"java6"     => 5,
+			"java7"     => 23,
+			"ocaml"     => 19,
+			"pascal"    => 4,
+			"perl"      => 13,
+			"php"       => 6,
+			"python"    => 7,
+			"python2.7" => 7,
+			"python3.3" => 31,
+			"ruby"      => 8,
+			"scala"     => 20,
 		}
 		REQUIREMENTS = {
 			:submit => [:token, :problem, :language, :source, :userid],

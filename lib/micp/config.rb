@@ -21,10 +21,9 @@ module MICP
 				.uniq if service
 		end
 		def require(*x)
-			if x.any? { |key| self[key].nil? }
-				puts "something key isn't found!"
-				exit(1)
-			end
+			x.each { |key|
+				abort("[ABORT]`#{key}' isn't found.") if self[key].nil?
+			}
 		end
 
 		def initialize(args)
@@ -56,7 +55,11 @@ module MICP
 	module ConfigParameters
 		TARGET_SERVICES = {
 			'codeforces' => :codeforces,
-			'any'        => :any,
+			'cf'         => :codeforces,
+			'aizu_online_judge' => :aizu_online_judge,
+			'aizu'              => :aizu_online_judge,
+			'aoj'               => :aizu_online_judge,
+			'any' => :any,
 		}
 		PARAM_KEYS = {
 			'problem' => :problem,
@@ -72,6 +75,9 @@ module MICP
 			'user_id' => :userid,
 			'userid'  => :userid,
 			'uid'     => :userid,
+			'id'      => :userid,
+			'password' => :password,
+			'pass'     => :password,
 		}
 	end
 
