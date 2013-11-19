@@ -7,12 +7,9 @@ module MICP
 		def requirements
 			REQUIREMENTS
 		end
-<<<<<<< HEAD
 		def service_name
 			"AizuOnlineJudge"
 		end
-=======
->>>>>>> 83c4d9078f9c66e49b0f9afcff4158407bbfb72f
 
 		def submit()
 			RestClient.post("http://judge.u-aizu.ac.jp/onlinejudge/servlet/Submit",
@@ -50,10 +47,6 @@ module MICP
 
 		REQUIREMENTS = {
 			:submit => [:problem, :language, :source, :userid, :password],
-<<<<<<< HEAD
-=======
-			:new    => [:problem, :language],
->>>>>>> 83c4d9078f9c66e49b0f9afcff4158407bbfb72f
 		}
 	end
 end
